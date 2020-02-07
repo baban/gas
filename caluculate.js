@@ -32,13 +32,13 @@ function hashToTable(result){
 }
 
 function caliculateRows(sheet, result){
-  var rowFlg = true;
-  for(var i=2; rowFlg; i++){
-    var o = caliculateRow(sheet, i, result);
-    rowFlg = o.flg;
-    result = o.result;
+  for(var i=2; true; i++){
+    var vokerName = sheet.getRange(i,2,i,3).getCell(1, 1).getValue();
+    if(vokerName==""){
+      return result;
+    }
+    result = caliculateRow(sheet, i, result);
   }
-  return result;
 }
 
 function caliculateRow(sheet, rowNum, result){
@@ -46,7 +46,6 @@ function caliculateRow(sheet, rowNum, result){
   for(var i=0; i < 5; i+=1){
     var workName = cells.getCell(1, i*2 + 1).getValue();
     var creatorName = cells.getCell(1, i*2 + 2).getValue();
-    if( workName=="" && i==0 ) return { result: result, flg: false };
     if( workName=="" ) break;
 
     //Browser.msgBox(workName);
@@ -60,5 +59,5 @@ function caliculateRow(sheet, rowNum, result){
     result[creatorName][workName] += 1;
   }
   
-  return { result: result, flg: true };
+  return result;
 }
