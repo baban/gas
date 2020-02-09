@@ -13,9 +13,23 @@ function caliculate() {
     if(a[2] < b[2]) return 1;
     return -1;
   });  
-  Browser.msgBox(tableToString(arr));
+  //Browser.msgBox(tableToString(arr));
+  saveSheet(arr);
 }
 
+
+function saveSheet(arr){
+  var sheets = SpreadsheetApp.create("投票結果");
+  var sheet = sheets.getSheets()[0];
+  var range = sheet.getRange(1,1,arr.length,3);  
+
+  for( var i=0; i<arr.length; i++ ){
+    for(var j=0; j<arr[i].length; j++){
+      range.getCell(i+1, j+1).setValue(arr[i][j]);
+    }
+  }
+  Browser.msgBox("完了");
+}
 
 /**
  * 投票人数のカウント
