@@ -13,7 +13,46 @@ function caliculate() {
     if(a[2] < b[2]) return 1;
     return -1;
   });  
-  Browser.msgBox(arr);
+  Browser.msgBox(tableToString(arr));
+}
+
+
+/**
+ * 投票人数のカウント
+ */
+function countVokers(){
+  var sheet=SpreadsheetApp.getActiveSheet();
+  var vokers = [];
+  for(var i=2; true; i++){
+    var vokerName = sheet.getRange(i,2,i,3).getCell(1, 1).getValue();
+    if(vokerName==""){
+      break;
+    }
+    vokers.push(vokerName);
+  }
+  //Browser.msgBox(vokers);
+  Browser.msgBox(uniq(vokers).length);
+}
+
+function uniq(array) {
+  const knownElements = {};
+  const uniquedArray = [];
+  for (var i = 0, maxi = array.length; i < maxi; i++) {
+    if (array[i] in knownElements)
+      continue;
+    uniquedArray.push(array[i]);
+    knownElements[array[i]] = true;
+  }
+  return uniquedArray;
+};
+
+function tableToString(arr){
+  var s = "";
+  for(var i=0; i<arr.length; i++){
+    var row = arr[i];
+    s += row[0] + "," + row[1] + "," + row[2] + "\n";
+  }
+  return s;
 }
 
 function hashToTable(result){
@@ -24,7 +63,6 @@ function hashToTable(result){
       if(!creator[workName]) continue;
       
       arr.push([creatorName,workName,creator[workName]]);
-      //Browser.msgBox([creatorName,workName,creator[workName]]);      
     }
   }
   
