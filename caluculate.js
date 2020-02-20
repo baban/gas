@@ -5,8 +5,7 @@ function caliculate() {
   var sheet=SpreadsheetApp.getActiveSheet();
 
   // 結果の保存
-  var result = {};
-  result = caliculateRows(sheet, result);
+  var result = caliculateRows(sheet, {});
   var arr = hashToTable(result);
   arr.sort(function(a,b){
     if(a[2] == b[2]) return 0;
@@ -14,12 +13,64 @@ function caliculate() {
     return -1;
   });  
   //Browser.msgBox(tableToString(arr));
-  saveSheet(arr);
+  saveSheet(arr,"投票結果");
 }
 
+/**
+ * 作者別で集計
+ */
+function aggrigateCreator(){
+  var sheet=SpreadsheetApp.getActiveSheet();
 
-function saveSheet(arr){
-  var sheets = SpreadsheetApp.create("投票結果");
+  // 結果の保存
+  var result = caliculateRows(sheet, {});
+  var arr = aggrigateCreatorArray(result);
+  arr.sort(function(a,b){
+    if(a[1] == b[1]) return 0;
+    if(a[1] < b[1]) return 1;
+    return -1;
+  });  
+  saveSheet(arr,"作者別ランキング");
+}
+
+/**
+ * 有効投票数をカウント
+ */
+function aggrigateVoteSum(){
+  var sheet=SpreadsheetApp.getActiveSheet();
+
+  // 結果の保存
+  var result = caliculateRows(sheet, {});
+
+  var sum = 0;    
+  for(var creatorName in result){
+    var creator = result[creatorName];
+    for(var workName in creator){
+      if(!creator[workName]) continue;
+      sum += creator[workName];
+    }
+  }
+  
+  Browser.msgBox(sum);
+}
+
+function aggrigateCreatorArray(result){
+  var arr = [];
+  for(var creatorName in result){
+    var creator = result[creatorName];
+    var sum = 0;    
+    for(var workName in creator){
+      if(!creator[workName]) continue;
+      sum += creator[workName];
+    }
+    arr.push([creatorName, sum]);
+  }
+  
+  return arr;
+}
+
+function saveSheet(arr,sheetName){
+  var sheets = SpreadsheetApp.create(sheetName);
   var sheet = sheets.getSheets()[0];
   var range = sheet.getRange(1,1,arr.length,3);  
 
@@ -28,7 +79,7 @@ function saveSheet(arr){
       range.getCell(i+1, j+1).setValue(arr[i][j]);
     }
   }
-  Browser.msgBox("完了");
+  //Browser.msgBox("完了");
 }
 
 /**
@@ -94,8 +145,8 @@ function caliculateRows(sheet, result){
 }
 
 function caliculateRow(sheet, rowNum, result){
-  var cells = sheet.getRange(rowNum,3,rowNum,13);
-  for(var i=0; i < 5; i+=1){
+  var cells = sheet.getRange(rowNum,3,rowNum,22);
+  for(var i=0; i < 10; i+=1){
     var workName = cells.getCell(1, i*2 + 1).getValue();
     var creatorName = cells.getCell(1, i*2 + 2).getValue();
     if( workName=="" ) break;
